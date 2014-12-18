@@ -3,9 +3,20 @@ gtfs-rt-dump
 
 Command-line dumper for GTFS-realtime feeds.
 
-Use as follows:
+```
+$ java -jar gtfs-rt-dump.jar -h
+usage: gtfs-rt-dump [-h] (-u URL | -f FILE)
 
-$ java -jar gtfs-rt-dump-1.0-SNAPSHOT-withAllDependencies.jar -u http://api.bart.gov/gtfsrt/tripupdate.aspx
+optional arguments:
+  -h, --help             show this help message and exit
+  -u URL, --url URL      URL containing GTFS-realtime feed to parse and display
+  -f FILE, --file FILE   File containing GTFS-realtime feed to parse and display (default: -)
+```
+
+Sample usage:
+
+```
+$ java -jar gtfs-rt-dump.jar -u http://api.bart.gov/gtfsrt/tripupdate.aspx
 header {
   gtfs_realtime_version: "1.0"
   incrementality: FULL_DATASET
@@ -17,4 +28,4 @@ entity {
     trip {
       trip_id: "46DC10"
     }
-
+```
