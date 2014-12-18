@@ -10,7 +10,13 @@
   <name>gtfs-rt-dump</name>
   <url>https://github.com/kurtraschke/gtfs-rt-dump</url>
 
-
+  <scm>
+    <connection>scm:git:ssh://github.com/kurtraschke/gtfs-rt-dump.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/kurtraschke/gtfs-rt-dump.git</developerConnection>
+    <url>https://github.com/kurtraschke/gtfs-rt-dump</url>
+    <tag>HEAD</tag>
+  </scm>
+  
   <repositories>
     <repository>
       <id>public.onebusaway.org</id>
