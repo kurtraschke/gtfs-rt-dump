@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Kurt Raschke <kurt@kurtraschke.com>
+ * Copyright (C) 2020 Kurt Raschke <kurt@kurtraschke.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,82 +16,100 @@
 package com.kurtraschke.gtfsrtdump;
 
 import com.google.protobuf.ExtensionRegistry;
-import com.google.transit.realtime.GtfsRealtime;
+import com.google.protobuf.TextFormat;
+import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtimeNYCT;
 import com.google.transit.realtime.GtfsRealtimeOneBusAway;
+import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
-import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.impl.Arguments;
-import net.sourceforge.argparse4j.inf.ArgumentParser;
-import net.sourceforge.argparse4j.inf.ArgumentParserException;
-import net.sourceforge.argparse4j.inf.MutuallyExclusiveGroup;
-import net.sourceforge.argparse4j.inf.Namespace;
+import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 
-/**
- *
- * @author kurt
- */
-public class Main {
+@Command(name = "gtfs-rt-dump",
+        description = "Parse and display the contents of a GTFS-realtime feed in a human-readable format.",
+        mixinStandardHelpOptions = true,
+        version = "1.1")
+public class Main implements Callable<Integer> {
+    @ArgGroup(heading = "Input can be read from a file or URL. If neither are specified, standard input will be used.%n")
+    ProtobufSource protobufSource;
 
-  private static final Logger _log = LoggerFactory.getLogger(Main.class);
+    static class ProtobufSource {
+        @Option(names = {"-f", "--file"},
+                description = "Read GTFS-rt from specified file.",
+                required = true)
+        Path protobufPath;
 
-  public static void main(String[] args) {
-    ArgumentParser parser = ArgumentParsers.newArgumentParser("gtfs-rt-dump")
-            .defaultHelp(true);
-
-    MutuallyExclusiveGroup group = parser.addMutuallyExclusiveGroup().required(true);
-
-    group.addArgument("-u", "--url")
-            .type(URL.class)
-            .help("URL containing GTFS-realtime feed to parse and display");
-
-    group.addArgument("-f", "--file")
-            .type(Arguments.fileType().acceptSystemIn().verifyCanRead())
-            .setDefault("-")
-            .help("File containing GTFS-realtime feed to parse and display");
-
-    try {
-      Namespace parseArgs = parser.parseArgs(args);
-
-      Object f = parseArgs.get("file");
-      Object u = parseArgs.get("url");
-
-      InputStream is;
-
-      if (u != null) {
-        is = ((URL) u).openStream();
-      } else {
-        if (((File) f).getPath().equals("-")) {
-          is = System.in;
-        } else {
-          is = new FileInputStream((File) f);
-        }
-      }
-
-      ExtensionRegistry registry = ExtensionRegistry.newInstance();
-
-      registry.add(GtfsRealtimeOneBusAway.obaFeedEntity);
-      registry.add(GtfsRealtimeOneBusAway.obaTripUpdate);
-      registry.add(GtfsRealtimeNYCT.nyctFeedHeader);
-      registry.add(GtfsRealtimeNYCT.nyctStopTimeUpdate);
-      registry.add(GtfsRealtimeNYCT.nyctTripDescriptor);
-
-      System.out.println(GtfsRealtime.FeedMessage.parseFrom(is, registry).toString());
-
-      is.close();
-    } catch (ArgumentParserException e) {
-      parser.handleError(e);
-    } catch (IOException ex) {
-      _log.error("IO exception", ex);
+        @Option(names = {"-u", "--url"},
+                description = "Read GTFS-rt from specified URL.",
+                required = true)
+        URL protobufUrl;
     }
-  }
+
+    @Option(names = {"-H", "--header"}, description = "Add specified HTTP header to request.")
+    Map<String, String> headers;
+
+    @Override
+    public Integer call() throws Exception {
+        final InputStream is;
+
+        if (protobufSource != null && protobufSource.protobufUrl != null) {
+            final URL inputUrl = protobufSource.protobufUrl;
+
+            final HttpClient client = HttpClient.newHttpClient();
+
+            final HttpRequest.Builder builder = HttpRequest.newBuilder(inputUrl.toURI());
+
+            if (headers != null && !headers.isEmpty()) {
+                builder.headers(
+                        headers.entrySet().stream()
+                                .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
+                                .toArray(String[]::new)
+                );
+            }
+
+            final HttpResponse<InputStream> response = client.send(builder.build(), ofInputStream());
+
+            is = response.body();
+        } else if (protobufSource != null && protobufSource.protobufPath != null) {
+            final Path inputPath = protobufSource.protobufPath;
+
+            is = Files.newInputStream(inputPath);
+        } else {
+            is = System.in;
+        }
+
+        final ExtensionRegistry registry = ExtensionRegistry.newInstance();
+
+        registry.add(GtfsRealtimeOneBusAway.obaFeedHeader);
+        registry.add(GtfsRealtimeOneBusAway.obaFeedEntity);
+        registry.add(GtfsRealtimeOneBusAway.obaTripUpdate);
+        registry.add(GtfsRealtimeNYCT.nyctFeedHeader);
+        registry.add(GtfsRealtimeNYCT.nyctStopTimeUpdate);
+        registry.add(GtfsRealtimeNYCT.nyctTripDescriptor);
+
+        FeedMessage fm = FeedMessage.parseFrom(is, registry);
+
+        TextFormat.print(fm, System.out);
+
+        is.close();
+
+        return 0;
+    }
+
+    public static void main(String... args) {
+        System.exit(new CommandLine(new Main()).execute(args));
+    }
 }
