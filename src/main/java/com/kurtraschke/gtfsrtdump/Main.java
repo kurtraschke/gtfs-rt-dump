@@ -16,16 +16,20 @@
 package com.kurtraschke.gtfsrtdump;
 
 import com.google.protobuf.ExtensionRegistry;
-import com.google.protobuf.TextFormat;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtimeNYCT;
 import com.google.transit.realtime.GtfsRealtimeOneBusAway;
+import com.kurtraschke.gtfsrtdump.output.CsvOutput;
+import com.kurtraschke.gtfsrtdump.output.JsonOutput;
+import com.kurtraschke.gtfsrtdump.output.PbTextOutput;
+import com.kurtraschke.gtfsrtdump.output.TableOutput;
 import picocli.CommandLine;
-import picocli.CommandLine.ArgGroup;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
+import picocli.CommandLine.*;
+import picocli.CommandLine.Model.CommandSpec;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -41,7 +45,14 @@ import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 @Command(name = "gtfs-rt-dump",
         description = "Parse and display the contents of a GTFS-realtime feed in a human-readable format.",
         mixinStandardHelpOptions = true,
-        version = "1.1")
+        version = "1.1",
+        synopsisSubcommandLabel = "COMMAND",
+        subcommands = {
+                PbTextOutput.class,
+                TableOutput.class,
+                JsonOutput.class,
+                CsvOutput.class
+        })
 public class Main implements Callable<Integer> {
     @ArgGroup(heading = "Input can be read from a file or URL. If neither are specified, standard input will be used.%n")
     ProtobufSource protobufSource;
@@ -61,8 +72,10 @@ public class Main implements Callable<Integer> {
     @Option(names = {"-H", "--header"}, description = "Add specified HTTP header to request.")
     Map<String, String> headers;
 
-    @Override
-    public Integer call() throws Exception {
+    @Spec
+    CommandSpec spec;
+
+    public FeedMessage getFeedMessage() throws IOException, InterruptedException, URISyntaxException {
         final InputStream is;
 
         if (protobufSource != null && protobufSource.protobufUrl != null) {
@@ -83,6 +96,7 @@ public class Main implements Callable<Integer> {
             final HttpResponse<InputStream> response = client.send(builder.build(), ofInputStream());
 
             is = response.body();
+
         } else if (protobufSource != null && protobufSource.protobufPath != null) {
             final Path inputPath = protobufSource.protobufPath;
 
@@ -100,16 +114,22 @@ public class Main implements Callable<Integer> {
         registry.add(GtfsRealtimeNYCT.nyctStopTimeUpdate);
         registry.add(GtfsRealtimeNYCT.nyctTripDescriptor);
 
-        FeedMessage fm = FeedMessage.parseFrom(is, registry);
-
-        TextFormat.print(fm, System.out);
+        final FeedMessage fm = FeedMessage.parseFrom(is, registry);
 
         is.close();
 
-        return 0;
+        return fm;
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        throw new ParameterException(spec.commandLine(), "Output format must be specified.");
     }
 
     public static void main(String... args) {
-        System.exit(new CommandLine(new Main()).execute(args));
+        System.exit(new CommandLine(new Main())
+                .setCaseInsensitiveEnumValuesAllowed(true)
+                .execute(args));
     }
 }
+
