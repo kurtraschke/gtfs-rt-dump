@@ -48,6 +48,7 @@ import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
         version = "1.1",
         synopsisSubcommandLabel = "COMMAND",
         subcommands = {
+                HelpCommand.class,
                 PbTextOutput.class,
                 TableOutput.class,
                 JsonOutput.class,
@@ -122,7 +123,7 @@ public class Main implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         throw new ParameterException(spec.commandLine(), "Output format must be specified.");
     }
 

@@ -5,6 +5,11 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+interface TimestampFormatter {
+    fun formatTimestamp(posixTimestamp: Long): String
+}
+
+@Suppress("unused")
 enum class TimestampFormatting : TimestampFormatter {
     POSIX {
         override fun formatTimestamp(posixTimestamp: Long): String {

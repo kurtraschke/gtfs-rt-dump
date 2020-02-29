@@ -12,7 +12,7 @@ public class CsvOutput extends OutputMethod {
     FeedParts selectedFeedPart;
 
     @Override
-    public Integer format(GtfsRealtime.FeedMessage fm) throws Exception {
+    public Integer format(GtfsRealtime.FeedMessage fm) {
         selectedFeedPart.generateOutput(fm);
         return 0;
     }

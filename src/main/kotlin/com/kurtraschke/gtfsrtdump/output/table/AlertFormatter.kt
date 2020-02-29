@@ -1,27 +1,13 @@
 package com.kurtraschke.gtfsrtdump.output.table
 
 import com.google.transit.realtime.GtfsRealtime
-import com.google.transit.realtime.GtfsRealtime.TranslatedString.Translation
 import com.jakewharton.picnic.TextAlignment.MiddleCenter
 import com.jakewharton.picnic.table
 import com.kurtraschke.gtfsrtdump.TimestampFormatter
 import org.davidmoten.text.utils.WordWrap
 
 fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {
-    val urlsMap = alert.url.translationList.associateBy(
-            keySelector = { if (it.hasLanguage()) it.language else "" },
-            valueTransform = Translation::getText
-    )
-
-    val headersMap = alert.headerText.translationList.associateBy(
-            keySelector = { if (it.hasLanguage()) it.language else "" },
-            valueTransform = Translation::getText
-    )
-
-    val descriptionMap = alert.descriptionText.translationList.associateBy(
-            keySelector = { if (it.hasLanguage()) it.language else "" },
-            valueTransform = Translation::getText
-    )
+    val (urlsMap, headersMap, descriptionMap) = alertContentsByLanguage(alert)
 
     val allLanguages = urlsMap.keys union headersMap.keys union descriptionMap.keys
 
@@ -79,7 +65,7 @@ fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {
                     ie.stopId)
         }
 
-        row{
+        row {
             cell("Cause")
             cell(alert.cause) {
                 columnSpan = 10
@@ -126,7 +112,7 @@ fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {
             }
 
             row {
-                cell(WordWrap.from(headersMap[languageCode]).maxWidth(60).wrap()) {
+                cell(headersMap[languageCode]?.let { WordWrap.from(it).maxWidth(60).wrap() }) {
                     columnSpan = 10
                 }
             }
@@ -138,7 +124,7 @@ fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {
             }
 
             row {
-                cell(WordWrap.from(descriptionMap[languageCode]).maxWidth(60).wrap()) {
+                cell(descriptionMap[languageCode]?.let { WordWrap.from(it).maxWidth(60).wrap() }) {
                     columnSpan = 10
                 }
             }

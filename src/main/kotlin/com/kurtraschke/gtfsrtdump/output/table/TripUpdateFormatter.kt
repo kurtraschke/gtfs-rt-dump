@@ -22,6 +22,16 @@ fun formatTripUpdate(tu: TripUpdate, tf: TimestampFormatter): String {
             formatVehicleDescriptor(vehicle, this, 5)
         }
 
+        row {
+            cell("Timestamp")
+            cell(tf.formatTimestamp(tu.timestamp))
+            cell("Delay")
+            cell(tu.delay)
+            cell("") {
+                columnSpan = 5
+            }
+        }
+
         if (tu.stopTimeUpdateList.isNotEmpty()) {
             row {
                 cell("") {
