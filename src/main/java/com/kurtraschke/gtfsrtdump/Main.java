@@ -17,8 +17,7 @@ package com.kurtraschke.gtfsrtdump;
 
 import com.google.protobuf.ExtensionRegistry;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
-import com.google.transit.realtime.GtfsRealtimeNYCT;
-import com.google.transit.realtime.GtfsRealtimeOneBusAway;
+import com.google.transit.realtime.GtfsRealtimeExtensions;
 import com.kurtraschke.gtfsrtdump.output.CsvOutput;
 import com.kurtraschke.gtfsrtdump.output.JsonOutput;
 import com.kurtraschke.gtfsrtdump.output.PbTextOutput;
@@ -156,12 +155,7 @@ public class Main implements Callable<Integer> {
 
         final ExtensionRegistry registry = ExtensionRegistry.newInstance();
 
-        registry.add(GtfsRealtimeOneBusAway.obaFeedHeader);
-        registry.add(GtfsRealtimeOneBusAway.obaFeedEntity);
-        registry.add(GtfsRealtimeOneBusAway.obaTripUpdate);
-        registry.add(GtfsRealtimeNYCT.nyctFeedHeader);
-        registry.add(GtfsRealtimeNYCT.nyctStopTimeUpdate);
-        registry.add(GtfsRealtimeNYCT.nyctTripDescriptor);
+        GtfsRealtimeExtensions.registerExtensions(registry);
 
         final FeedMessage fm = FeedMessage.parseFrom(is, registry);
 
