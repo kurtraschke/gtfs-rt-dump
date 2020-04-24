@@ -1,6 +1,6 @@
 package com.kurtraschke.gtfsrtdump.output;
 
-import com.google.transit.realtime.GtfsRealtime;
+import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.kurtraschke.gtfsrtdump.Main;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ParentCommand;
@@ -14,10 +14,10 @@ abstract class OutputMethod implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        final GtfsRealtime.FeedMessage fm = main.getFeedMessage();
+        final FeedMessage fm = main.getFeedMessage();
 
         return format(fm);
     }
 
-    abstract Integer format(GtfsRealtime.FeedMessage fm) throws Exception;
+    abstract Integer format(FeedMessage fm) throws Exception;
 }
