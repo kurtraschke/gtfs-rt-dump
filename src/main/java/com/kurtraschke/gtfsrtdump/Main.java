@@ -23,13 +23,16 @@ import com.kurtraschke.gtfsrtdump.output.CsvOutput;
 import com.kurtraschke.gtfsrtdump.output.JsonOutput;
 import com.kurtraschke.gtfsrtdump.output.PbTextOutput;
 import com.kurtraschke.gtfsrtdump.output.TableOutput;
+import com.kurtraschke.gtfsrtdump.utils.NullX509ExtendedTrustManager;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
 
-import java.io.IOException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import java.io.InputStream;
-import java.net.URISyntaxException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -38,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
@@ -55,8 +59,8 @@ import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
                 CsvOutput.class
         })
 public class Main implements Callable<Integer> {
-    @ArgGroup(heading = "Input can be read from a file or URL. If neither are specified, standard input will be used.%n")
-    ProtobufSource protobufSource;
+
+    private static final Logger LOG = Logger.getLogger("com.kurtraschke.gtfsrtdump");
 
     static class ProtobufSource {
         @Option(names = {"-f", "--file"},
@@ -70,19 +74,64 @@ public class Main implements Callable<Integer> {
         URL protobufUrl;
     }
 
+    static class BasicAuthenticationCredential {
+        @Option(names = {"-U", "--username"},
+                description = "Username for HTTP Basic authentication",
+                required = true)
+        String username;
+
+        @Option(names = {"-P", "--password"},
+                description = "Password for HTTP Basic authentication",
+                required = true)
+        String password;
+    }
+
+    @ArgGroup(heading = "Input can be read from a file or URL. If neither are specified, standard input will be used.%n")
+    ProtobufSource protobufSource;
+
+    @ArgGroup(heading = "HTTP Basic authentication credentials can be specified if input is read from a URL.%n",
+            exclusive = false)
+    BasicAuthenticationCredential basicAuthenticationCredentials;
+
     @Option(names = {"-H", "--header"}, description = "Add specified HTTP header to request.")
     Map<String, String> headers;
+
+    @Option(names = {"--disable-tls-validation"}, description = "Disable all TLS server certificate validation.")
+    boolean disableTlsValidation;
 
     @Spec
     CommandSpec spec;
 
-    public FeedMessage getFeedMessage() throws IOException, InterruptedException, URISyntaxException {
+    public FeedMessage getFeedMessage() throws Exception {
         final InputStream is;
 
         if (protobufSource != null && protobufSource.protobufUrl != null) {
             final URL inputUrl = protobufSource.protobufUrl;
 
-            final HttpClient client = HttpClient.newHttpClient();
+            final HttpClient.Builder clientBuilder = HttpClient.newBuilder();
+
+            if (basicAuthenticationCredentials != null) {
+                clientBuilder.authenticator(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(
+                                basicAuthenticationCredentials.username,
+                                basicAuthenticationCredentials.password.toCharArray());
+                    }
+                });
+            }
+
+            if (disableTlsValidation) {
+                LOG.warning("TLS server certificate validation is disabled.");
+                final SSLContext context = SSLContext.getInstance("TLS");
+                context.init(null,
+                        new TrustManager[]{new NullX509ExtendedTrustManager()},
+                        null);
+
+                clientBuilder.sslContext(context);
+            }
+
+            final HttpClient client = clientBuilder.build();
 
             final HttpRequest.Builder builder = HttpRequest.newBuilder(inputUrl.toURI());
 
@@ -97,7 +146,6 @@ public class Main implements Callable<Integer> {
             final HttpResponse<InputStream> response = client.send(builder.build(), ofInputStream());
 
             is = response.body();
-
         } else if (protobufSource != null && protobufSource.protobufPath != null) {
             final Path inputPath = protobufSource.protobufPath;
 
@@ -132,5 +180,6 @@ public class Main implements Callable<Integer> {
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .execute(args));
     }
+
 }
 
