@@ -4,6 +4,7 @@ import com.google.transit.realtime.GtfsRealtime
 import com.jakewharton.picnic.TextAlignment.MiddleCenter
 import com.jakewharton.picnic.table
 import com.kurtraschke.gtfsrtdump.TimestampFormatter
+import com.kurtraschke.gtfsrtdump.alertContentsByLanguage
 import org.davidmoten.text.utils.WordWrap
 
 fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {

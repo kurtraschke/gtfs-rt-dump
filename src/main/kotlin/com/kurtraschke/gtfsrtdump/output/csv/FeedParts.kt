@@ -4,7 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import com.google.transit.realtime.GtfsRealtime.*
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate
-import com.kurtraschke.gtfsrtdump.output.table.alertContentsByLanguage
+import com.kurtraschke.gtfsrtdump.alertContentsByLanguage
 
 internal interface CsvOutput {
     fun generateOutput(fm: FeedMessage)
