@@ -1,6 +1,8 @@
 gtfs-rt-dump
 ============
 
+[![](https://jitpack.io/v/kurtraschke/gtfs-rt-dump.svg)](https://jitpack.io/#kurtraschke/gtfs-rt-dump)
+
 Command-line dumper for GTFS-realtime feeds.
 
 ```
