@@ -15,6 +15,7 @@
  */
 package com.kurtraschke.gtfsrtdump;
 
+import com.google.common.io.CountingInputStream;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtimeExtensions;
@@ -157,9 +158,13 @@ public class Main implements Callable<Integer> {
 
         GtfsRealtimeExtensions.registerExtensions(registry);
 
-        final FeedMessage fm = FeedMessage.parseFrom(is, registry);
+        final CountingInputStream cis = new CountingInputStream(is);
+
+        final FeedMessage fm = FeedMessage.parseFrom(cis, registry);
 
         is.close();
+
+        LOG.info(() -> String.format("Read %d bytes from source.", cis.getCount()));
 
         return fm;
     }
