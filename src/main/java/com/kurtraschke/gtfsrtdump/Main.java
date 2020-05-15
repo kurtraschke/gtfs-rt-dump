@@ -124,9 +124,11 @@ public class Main implements Callable<Integer> {
             if (disableTlsValidation) {
                 LOG.warning("TLS server certificate validation is disabled.");
                 final SSLContext context = SSLContext.getInstance("TLS");
-                context.init(null,
+                context.init(
+                        null,
                         new TrustManager[]{new NullX509ExtendedTrustManager()},
-                        null);
+                        null
+                );
 
                 clientBuilder.sslContext(context);
             }

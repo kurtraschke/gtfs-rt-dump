@@ -29,7 +29,7 @@ enum class TimestampFormatting : TimestampFormatter {
         override fun formatTimestamp(posixTimestamp: Long): String {
             return if (posixTimestamp == 0L) {
                 ""
-            } else DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC")).format(Instant.ofEpochSecond(posixTimestamp))
+            } else DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC")).format(Instant.ofEpochSecond(posixTimestamp)) + "Z"
         }
     }
 }
