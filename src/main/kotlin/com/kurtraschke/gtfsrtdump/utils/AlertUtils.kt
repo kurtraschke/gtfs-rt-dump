@@ -1,4 +1,4 @@
-package com.kurtraschke.gtfsrtdump
+package com.kurtraschke.gtfsrtdump.utils
 
 import com.google.transit.realtime.GtfsRealtime
 import com.google.transit.realtime.GtfsRealtime.TranslatedString

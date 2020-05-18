@@ -1,5 +1,3 @@
-@file:JvmName("FeedHeaderFormatter")
-
 package com.kurtraschke.gtfsrtdump.output.table
 
 import com.google.transit.realtime.GtfsRealtime.FeedHeader

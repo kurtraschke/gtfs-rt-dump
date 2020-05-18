@@ -4,9 +4,9 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import com.google.transit.realtime.GtfsRealtime.*
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate
-import com.kurtraschke.gtfsrtdump.alertContentsByLanguage
+import com.kurtraschke.gtfsrtdump.utils.alertContentsByLanguage
 
-internal interface CsvOutput {
+internal interface FeedPart {
     fun generateOutput(fm: FeedMessage)
 }
 
@@ -37,7 +37,7 @@ fun makeStopTimeUpdateRow(fe: FeedEntity, tu: TripUpdate, trip: TripDescriptor, 
 }
 
 @Suppress("unused")
-enum class FeedParts : CsvOutput {
+enum class FeedParts : FeedPart {
     FEED_HEADER {
         override fun generateOutput(fm: FeedMessage) {
             val schema = CsvSchema.builder()
@@ -211,34 +211,35 @@ enum class FeedParts : CsvOutput {
 
                         (if (alert.activePeriodList.isNotEmpty())
                             alert.activePeriodList
-                        else listOf(TimeRange.getDefaultInstance())).flatMap { ap ->
-                            alert.informedEntityList.flatMap { ie ->
-                                allLanguages.map { language ->
-                                    arrayOf(
-                                            fe.id,
-                                            fe.isDeleted,
-                                            ap.start,
-                                            ap.end,
-                                            ie.agencyId,
-                                            ie.routeId,
-                                            ie.routeType,
-                                            ie.stopId,
-                                            ie.trip.tripId,
-                                            ie.trip.routeId,
-                                            ie.trip.directionId,
-                                            ie.trip.startDate,
-                                            ie.trip.startTime,
-                                            ie.trip.scheduleRelationship,
-                                            alert.cause,
-                                            alert.effect,
-                                            language,
-                                            urlsMap[language],
-                                            headersMap[language],
-                                            descriptionMap[language]
-                                    )
+                        else listOf(TimeRange.getDefaultInstance())
+                                ).flatMap { ap ->
+                                    alert.informedEntityList.flatMap { ie ->
+                                        allLanguages.map { language ->
+                                            arrayOf(
+                                                    fe.id,
+                                                    fe.isDeleted,
+                                                    ap.start,
+                                                    ap.end,
+                                                    ie.agencyId,
+                                                    ie.routeId,
+                                                    ie.routeType,
+                                                    ie.stopId,
+                                                    ie.trip.tripId,
+                                                    ie.trip.routeId,
+                                                    ie.trip.directionId,
+                                                    ie.trip.startDate,
+                                                    ie.trip.startTime,
+                                                    ie.trip.scheduleRelationship,
+                                                    alert.cause,
+                                                    alert.effect,
+                                                    language,
+                                                    urlsMap[language],
+                                                    headersMap[language],
+                                                    descriptionMap[language]
+                                            )
+                                        }
+                                    }
                                 }
-                            }
-                        }
                     }
                     .forEach { sw.write(it) }
         }

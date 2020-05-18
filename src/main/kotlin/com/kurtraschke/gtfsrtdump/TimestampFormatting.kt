@@ -13,23 +13,29 @@ interface TimestampFormatter {
 enum class TimestampFormatting : TimestampFormatter {
     POSIX {
         override fun formatTimestamp(posixTimestamp: Long): String {
-            return if (posixTimestamp == 0L) {
-                ""
-            } else posixTimestamp.toString()
+            return when (posixTimestamp) {
+                0L -> ""
+                else -> posixTimestamp.toString()
+            }
         }
     },
     ISO_8601_LOCAL {
         override fun formatTimestamp(posixTimestamp: Long): String {
-            return if (posixTimestamp == 0L) {
-                ""
-            } else DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(Instant.ofEpochSecond(posixTimestamp).atZone(TimeZone.getDefault().toZoneId()))
+            return when (posixTimestamp) {
+                0L -> ""
+                else -> DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                        .format(Instant.ofEpochSecond(posixTimestamp).atZone(TimeZone.getDefault().toZoneId()))
+            }
         }
     },
     ISO_8601_UTC {
         override fun formatTimestamp(posixTimestamp: Long): String {
-            return if (posixTimestamp == 0L) {
-                ""
-            } else DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC")).format(Instant.ofEpochSecond(posixTimestamp)) + "Z"
+            return when (posixTimestamp) {
+                0L -> ""
+                else -> DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                        .withZone(ZoneId.of("UTC"))
+                        .format(Instant.ofEpochSecond(posixTimestamp)) + "Z"
+            }
         }
     }
 }
