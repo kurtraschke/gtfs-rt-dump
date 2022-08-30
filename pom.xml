@@ -12,11 +12,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.7.0</kotlin.version>
+        <kotlin.version>1.7.10</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlin.compiler.jvmTarget>18</kotlin.compiler.jvmTarget>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
+        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <mainClass>com.kurtraschke.gtfsrtdump.MainKt</mainClass>
     </properties>
 
@@ -45,7 +45,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.13.2.20220328</version>
+                <version>2.13.3</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.21.1</version>
+            <version>3.21.5</version>
         </dependency>
         <dependency>
             <groupId>org.onebusaway</groupId>
