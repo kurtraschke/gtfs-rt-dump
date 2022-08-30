@@ -3,14 +3,16 @@ package com.kurtraschke.gtfsrtdump.output.table
 import com.google.transit.realtime.GtfsRealtime
 import com.jakewharton.picnic.TextAlignment.MiddleCenter
 import com.jakewharton.picnic.table
-import com.kurtraschke.gtfsrtdump.TimestampFormatter
-import com.kurtraschke.gtfsrtdump.utils.alertContentsByLanguage
+import com.kurtraschke.gtfsrtdump.utils.AlertContents
+import com.kurtraschke.gtfsrtdump.utils.TimestampFormatter
 import org.davidmoten.text.utils.WordWrap
 
 fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {
-    val (urlsMap, headersMap, descriptionMap) = alertContentsByLanguage(alert)
+    val alertContents = AlertContents(alert)
 
-    val allLanguages = urlsMap.keys union headersMap.keys union descriptionMap.keys
+    val (urlsMap, headersMap, descriptionMap) = alertContents
+
+    val allLanguages = alertContents.languages
 
     return table {
         cellStyle {
@@ -61,9 +63,18 @@ fun formatAlert(alert: GtfsRealtime.Alert, tf: TimestampFormatter): String {
         }
 
         alert.informedEntityList.forEach { ie ->
-            row(ie.agencyId, ie.routeId, ie.routeType,
-                    ie.trip.tripId, ie.trip.routeId, ie.trip.directionId, ie.trip.startDate, ie.trip.startTime, ie.trip.scheduleRelationship,
-                    ie.stopId)
+            row(
+                ie.agencyId,
+                ie.routeId,
+                ie.routeType,
+                ie.trip.tripId,
+                ie.trip.routeId,
+                ie.trip.directionId,
+                ie.trip.startDate,
+                ie.trip.startTime,
+                ie.trip.scheduleRelationship,
+                ie.stopId
+            )
         }
 
         row {

@@ -2,18 +2,22 @@ package com.kurtraschke.gtfsrtdump.output
 
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
 import com.kurtraschke.gtfsrtdump.Main
-import picocli.CommandLine.*
+import picocli.CommandLine.Command
+import picocli.CommandLine.ParentCommand
+import java.io.PrintWriter
 import java.util.concurrent.Callable
 
 @Command
 abstract class OutputMethod : Callable<Int> {
     @ParentCommand
-    private lateinit var main: Main
+    lateinit var main: Main
 
     override fun call(): Int {
         val fm = main.feedMessage
-        return format(fm)
+        format(fm, main.out)
+        main.out.flush()
+        return 0
     }
 
-    abstract fun format(fm: FeedMessage): Int
+    abstract fun format(fm: FeedMessage, w: PrintWriter): Int
 }

@@ -3,7 +3,7 @@ package com.kurtraschke.gtfsrtdump.output.table
 import com.google.transit.realtime.GtfsRealtime.TripUpdate
 import com.jakewharton.picnic.TextAlignment.MiddleCenter
 import com.jakewharton.picnic.table
-import com.kurtraschke.gtfsrtdump.TimestampFormatter
+import com.kurtraschke.gtfsrtdump.utils.TimestampFormatter
 
 fun formatTripUpdate(tu: TripUpdate, tf: TimestampFormatter): String {
     return table {
@@ -48,13 +48,30 @@ fun formatTripUpdate(tu: TripUpdate, tf: TimestampFormatter): String {
                 cell("")
             }
 
-            row("Stop ID", "Stop Sequence", "Time", "Delay", "Uncertainty", "Time", "Delay", "Uncertainty", "Schedule Relationship")
+            row(
+                "Stop ID",
+                "Stop Sequence",
+                "Time",
+                "Delay",
+                "Uncertainty",
+                "Time",
+                "Delay",
+                "Uncertainty",
+                "Schedule Relationship"
+            )
 
             tu.stopTimeUpdateList.forEach { stu ->
-                row(stu.stopId, stu.stopSequence,
-                        tf.formatTimestamp(stu.arrival.time), stu.arrival.delay, stu.arrival.uncertainty,
-                        tf.formatTimestamp(stu.departure.time), stu.departure.delay, stu.departure.uncertainty,
-                        stu.scheduleRelationship)
+                row(
+                    stu.stopId,
+                    stu.stopSequence,
+                    tf.formatTimestamp(stu.arrival.time),
+                    stu.arrival.delay,
+                    stu.arrival.uncertainty,
+                    tf.formatTimestamp(stu.departure.time),
+                    stu.departure.delay,
+                    stu.departure.uncertainty,
+                    stu.scheduleRelationship
+                )
             }
         }
 

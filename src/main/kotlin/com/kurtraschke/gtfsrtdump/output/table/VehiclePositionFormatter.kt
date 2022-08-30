@@ -3,7 +3,7 @@ package com.kurtraschke.gtfsrtdump.output.table
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition
 import com.jakewharton.picnic.TextAlignment.MiddleLeft
 import com.jakewharton.picnic.table
-import com.kurtraschke.gtfsrtdump.TimestampFormatter
+import com.kurtraschke.gtfsrtdump.utils.TimestampFormatter
 
 fun formatVehiclePosition(vp: VehiclePosition, tf: TimestampFormatter): String {
     return table {
@@ -46,6 +46,13 @@ fun formatVehiclePosition(vp: VehiclePosition, tf: TimestampFormatter): String {
             cell("Congestion Level")
             cell("Occupancy Status")
         }
-        row(vp.currentStatus, vp.stopId, vp.currentStopSequence, tf.formatTimestamp(vp.timestamp), vp.congestionLevel, vp.occupancyStatus)
+        row(
+            vp.currentStatus,
+            vp.stopId,
+            vp.currentStopSequence,
+            tf.formatTimestamp(vp.timestamp),
+            vp.congestionLevel,
+            vp.occupancyStatus
+        )
     }.toString()
 }

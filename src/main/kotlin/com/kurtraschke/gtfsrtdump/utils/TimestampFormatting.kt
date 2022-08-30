@@ -1,4 +1,4 @@
-package com.kurtraschke.gtfsrtdump
+package com.kurtraschke.gtfsrtdump.utils
 
 import java.time.Instant
 import java.time.ZoneId
@@ -23,8 +23,9 @@ enum class TimestampFormatting : TimestampFormatter {
         override fun formatTimestamp(posixTimestamp: Long): String {
             return when (posixTimestamp) {
                 0L -> ""
-                else -> DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                        .format(Instant.ofEpochSecond(posixTimestamp).atZone(TimeZone.getDefault().toZoneId()))
+                else -> DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(
+                        Instant.ofEpochSecond(posixTimestamp).atZone(TimeZone.getDefault().toZoneId())
+                    )
             }
         }
     },
@@ -32,9 +33,8 @@ enum class TimestampFormatting : TimestampFormatter {
         override fun formatTimestamp(posixTimestamp: Long): String {
             return when (posixTimestamp) {
                 0L -> ""
-                else -> DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                        .withZone(ZoneId.of("UTC"))
-                        .format(Instant.ofEpochSecond(posixTimestamp)) + "Z"
+                else -> DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC"))
+                    .format(Instant.ofEpochSecond(posixTimestamp)) + "Z"
             }
         }
     }

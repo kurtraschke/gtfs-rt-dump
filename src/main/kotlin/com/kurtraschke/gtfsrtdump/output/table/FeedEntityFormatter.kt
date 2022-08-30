@@ -2,7 +2,7 @@ package com.kurtraschke.gtfsrtdump.output.table
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity
 import com.jakewharton.picnic.table
-import com.kurtraschke.gtfsrtdump.TimestampFormatter
+import com.kurtraschke.gtfsrtdump.utils.TimestampFormatter
 
 fun formatFeedEntities(feedEntities: Collection<FeedEntity>, timestampFormatter: TimestampFormatter): String {
     return table {

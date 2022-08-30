@@ -1,6 +1,7 @@
 package com.kurtraschke.gtfsrtdump.output.table
 
-import com.google.transit.realtime.GtfsRealtime.*
+import com.google.transit.realtime.GtfsRealtime.TripDescriptor
+import com.google.transit.realtime.GtfsRealtime.VehicleDescriptor
 import com.jakewharton.picnic.TableDsl
 import com.jakewharton.picnic.TextAlignment.MiddleLeft
 

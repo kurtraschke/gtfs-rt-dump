@@ -2,9 +2,9 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
-      <option name="id" value="releases-camsys-public-repo" />
-      <option name="name" value="releases-camsys-public-repo" />
-      <option name="url" value="https://repo.camsys-apps.com/releases/" />
+      <option name="id" value="BintrayJCenter" />
+      <option name="name" value="BintrayJCenter" />
+      <option name="url" value="https://jcenter.bintray.com/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -12,19 +12,24 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="central" />
-      <option name="name" value="Maven Central repository" />
-      <option name="url" value="https://repo1.maven.org/maven2" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="jitpack.io" />
       <option name="name" value="jitpack.io" />
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="BintrayJCenter" />
-      <option name="name" value="BintrayJCenter" />
-      <option name="url" value="https://jcenter.bintray.com/" />
+      <option name="id" value="MavenRepo" />
+      <option name="name" value="MavenRepo" />
+      <option name="url" value="https://repo.maven.apache.org/maven2/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="releases-camsys-public-repo" />
+      <option name="name" value="releases-camsys-public-repo" />
+      <option name="url" value="https://repo.camsys-apps.com/releases/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />
@@ -32,9 +37,9 @@
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="MavenRepo" />
-      <option name="name" value="MavenRepo" />
-      <option name="url" value="https://repo.maven.apache.org/maven2/" />
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="https://repo.camsys-apps.com/snapshots/" />
     </remote-repository>
   </component>
 </project>

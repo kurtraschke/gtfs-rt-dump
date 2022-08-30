@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="gtfs-rt-dump" />
+      </profile>
+    </annotationProcessing>
     <bytecodeTargetLevel target="11">
       <module name="gtfs-rt-dump (1)" target="1.7" />
       <module name="gtfs-rt-dump (2)" target="1.7" />
@@ -8,7 +16,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="gtfs-rt-dump" options="-Xlint:all -Aproject=com.kurtraschke/gtfs-rt-dump" />
+      <module name="gtfs-rt-dump" options="" />
       <module name="gtfs-rt-dump (1)" options="-Xlint:all" />
       <module name="gtfs-rt-dump (2)" options="-Xlint:all" />
     </option>
