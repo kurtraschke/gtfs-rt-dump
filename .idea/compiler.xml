@@ -10,15 +10,14 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
-      <module name="gtfs-rt-dump (1)" target="1.7" />
-      <module name="gtfs-rt-dump (2)" target="1.7" />
+      <module name="gtfs-rt-dump (1)" target="17" />
+      <module name="gtfs-rt-dump (2)" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="gtfs-rt-dump" options="" />
-      <module name="gtfs-rt-dump (1)" options="-Xlint:all" />
-      <module name="gtfs-rt-dump (2)" options="-Xlint:all" />
+      <module name="gtfs-rt-dump (2)" options="" />
     </option>
   </component>
 </project>

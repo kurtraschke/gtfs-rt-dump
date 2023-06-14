@@ -11,12 +11,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.7.10</kotlin.version>
+        <kotlin.version>1.8.20</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <mainClass>com.kurtraschke.gtfsrtdump.MainKt</mainClass>
+        <picocli.version>4.7.2</picocli.version>
     </properties>
 
     <scm>
@@ -52,7 +53,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.13.3</version>
+                <version>2.13.4</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -68,17 +69,17 @@
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.6.3</version>
+            <version>${picocli.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.21.7</version>
+            <version>3.22.2</version>
         </dependency>
         <dependency>
             <groupId>org.onebusaway</groupId>
             <artifactId>onebusaway-gtfs-realtime-api</artifactId>
-            <version>1.2.26</version>
+            <version>1.2.27</version>
         </dependency>
         <dependency>
             <groupId>com.jakewharton.picnic</groupId>
@@ -110,7 +111,7 @@
         <dependency>
             <groupId>com.hubspot.jackson</groupId>
             <artifactId>jackson-datatype-protobuf</artifactId>
-            <version>0.9.12</version>
+            <version>0.9.13</version>
         </dependency>
     </dependencies>
 
@@ -138,6 +139,34 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>3.3.2</version>
+                    <configuration>
+                        <from>
+                            <image>amazoncorretto:17</image>
+                            <platforms>
+                                <platform>
+                                    <architecture>amd64</architecture>
+                                    <os>linux</os>
+                                </platform>
+                                <platform>
+                                    <architecture>arm64</architecture>
+                                    <os>linux</os>
+                                </platform>
+                            </platforms>
+                        </from>
+                        <to>
+                            <image>ghcr.io/kurtraschke/gtfs-rt-dump/${project.artifactId}:${project.version}</image>
+                        </to>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.github.zlika</groupId>
+                    <artifactId>reproducible-build-maven-plugin</artifactId>
+                    <version>0.16</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -161,7 +190,7 @@
                                 <annotationProcessorPath>
                                     <groupId>info.picocli</groupId>
                                     <artifactId>picocli-codegen</artifactId>
-                                    <version>4.6.3</version>
+                                    <version>${picocli.version}</version>
                                 </annotationProcessorPath>
                             </annotationProcessorPaths>
                             <annotationProcessorArgs>
@@ -243,6 +272,29 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <programs>
+                        <program>
+                            <mainClass>${mainClass}</mainClass>
+                            <id>gtfs-rt-dump</id>
+                        </program>
+                    </programs>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
