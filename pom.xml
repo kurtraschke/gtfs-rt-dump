@@ -83,8 +83,8 @@
         </dependency>
         <dependency>
             <groupId>com.jakewharton.picnic</groupId>
-            <artifactId>picnic</artifactId>
-            <version>0.5.0</version>
+            <artifactId>picnic-jvm</artifactId>
+            <version>0.6.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
