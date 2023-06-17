@@ -10,7 +10,7 @@ import picocli.CommandLine
 import java.nio.file.Paths
 import kotlin.test.assertEquals
 
-class ArchiverIT {
+class DumpIT {
 
     @Test
     fun testDump() {
